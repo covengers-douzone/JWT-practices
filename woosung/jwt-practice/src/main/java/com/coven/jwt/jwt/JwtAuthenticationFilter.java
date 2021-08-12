@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.coven.jwt.auth.PrincipalDetails;
 import com.coven.jwt.model.User;
+import com.coven.jwt.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,22 +28,47 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
 
+
+    private UserRepository userRepository;
+
     // /login 요청을 하면 로그인 시도를 위해서 실행되는 함수
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         // 1. username, password 받기
         System.out.println("JwtAuthenticationFilter:로그인 시도 중..");
         try {
-//            BufferedReader br = request.getReader();
-//            String input = null;
-//            while((input = br.readLine()) != null){
-//                System.out.println(input);
+            // form data to json
+            BufferedReader br = request.getReader();
+            String input = null;
+            String formData = null;
+            while((input = br.readLine()) != null) {
+                System.out.println(input);
+                formData = input;
+            }
+            System.out.println(formData);
+            if(formData == null){
+                return null;
+            }
+            String [] formArray = formData.split("&");
+            String formUsername = formArray[0];
+            String formPassword = formArray[1];
 
-//         json요청이라고 가정하고 parsing하기
-            // json 형식 parsing해주는 object 사용하기
+            String [] formUsernameArray = formUsername.split("=");
+            String username = formUsernameArray[1].replace("%40","@");
+
+            String [] formPasswordArray = formPassword.split("=");
+            String password = formPasswordArray[1];
+            // form data to json fin.
+
+////         json요청이라고 가정하고 parsing하기
+//            // json 형식 parsing해주는 object 사용하기
+//
+            String jsonFromForm = "{\"username\":"+'"'+username+'"'+", "+"\"password\":"+'"'+password+'"'+"}";
+            System.out.println(jsonFromForm);
+
             ObjectMapper om = new ObjectMapper();
-            User user = om.readValue(request.getInputStream(), User.class);
-
+//            User user = om.readValue(request.getInputStream(), User.class);
+            User user = om.readValue(jsonFromForm, User.class);
             System.out.println(user);
 
             // 토큰 만들고 (받아온 정보로) 인증해보기
@@ -63,7 +89,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // 굳이 JWT 토큰을 사용하면서 session 을 사용할 이유는 없다. 단지 권한 처리 때문에 session 에 넣어 주는것.
             return authentication;
 
-        }catch (IOException e) {
+        }catch (Exception e) {
             e.printStackTrace();
         }
         return null;

@@ -20,7 +20,6 @@ public class MyFilter1 implements Filter {
         if(request.getMethod().equals("POST")) {
             String headerAuth = request.getHeader("Authorization");
             System.out.println(headerAuth);
-
             if (headerAuth.equals("cos")) {
                 filterChain.doFilter(request, response);
             } else {

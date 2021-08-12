@@ -15,9 +15,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //mysql 쓰고 있으면 자동으로 auto increment
     private Long id;
-    private String username;
+    private String username; // email
+    private String name;
     private String password;
     private String roles; // USER, ADMIN
+    private String phoneNumber;
 
     public List<String> getRoleList(){
         if(this.roles.length() > 0){

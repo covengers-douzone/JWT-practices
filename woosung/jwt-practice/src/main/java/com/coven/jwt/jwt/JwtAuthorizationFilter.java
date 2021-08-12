@@ -9,6 +9,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.coven.jwt.auth.PrincipalDetails;
 import com.coven.jwt.model.User;
 import com.coven.jwt.repository.UserRepository;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,6 +39,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 //        super.doFilterInternal(request, response, chain);
         System.out.println("인증이나 권한이 필요한 주소 요청이 됌");
         String jwtHeader = request.getHeader("Authorization");
+//        String jwtHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         System.out.println("==============" + jwtHeader);
 
 
